@@ -20,6 +20,7 @@
 #include <stdio.h>
 #include <stumpless/target.h>
 #include <stumpless/target/stream.h>
+#include <stumpless/config.h>
 #include "private/config/locale/wrapper.h"
 #include "private/config/wrapper/thread_safety.h"
 #include "private/error.h"
@@ -76,6 +77,8 @@ stumpless_open_stream_target( const char *name, FILE *stream ) {
     goto fail_id;
   }
 
+  initialize_target_color_codes( target );
+
   stumpless_set_current_target( target );
   return target;
 
@@ -127,4 +130,78 @@ sendto_stream_target( struct stream_target *target,
 write_failure:
   raise_stream_write_failure(  );
   return -1;
+}
+
+void
+stumpless_set_severity_color( struct stumpless_target *target,
+                              const enum stumpless_severity severity,
+                              const char *escape_code ) {
+  VALIDATE_ARG_NOT_NULL_VOID_RETURN( target );
+  VALIDATE_ARG_NOT_NULL_VOID_RETURN( escape_code );
+  unsigned int severity_index;
+
+  severity_index = map_severity_level_to_color_code_index( severity );
+
+  /* If we were passed an invalid severity and the previous function calls
+   * raised an error, there's no point in configuring the escape codes. */
+  const struct stumpless_error *error = stumpless_get_error( );
+  if ( error )
+    return;
+
+  lock_target( target );
+  target->color_codes[severity_index] = escape_code;
+  unlock_target( target );
+}
+
+/**
+ * Map severity enum value to the index into the target's color codes array
+ * represented by the given severity.
+ */
+unsigned int
+map_severity_level_to_color_code_index(const enum stumpless_severity severity) {
+  unsigned int index;
+
+  index = 0;
+
+#define MAP_ONE_SEVERITY_LEVEL_TO_COLOR_CODE_INDEX(SEVERITY, VALUE) \
+  if (SEVERITY == severity) { \
+    return index; \
+  } \
+  index += 1;
+
+  STUMPLESS_FOREACH_SEVERITY(MAP_ONE_SEVERITY_LEVEL_TO_COLOR_CODE_INDEX);
+
+  /* If any severity level was not caught by the macro above, the user must have
+   * passed in an invalid severity. */
+  raise_invalid_severity( severity );
+  return 0;
+}
+
+/**
+ * Initialize the color_codes field of the given target.
+ */
+void
+initialize_target_color_codes( struct stumpless_target *target ) {
+  VALIDATE_ARG_NOT_NULL_VOID_RETURN( target );
+  unsigned int index;
+
+  static const char *default_color_codes[] = {
+    STUMPLESS_DEFAULT_COLOR_CODE_FOR_SEVERITY_EMERG,
+    STUMPLESS_DEFAULT_COLOR_CODE_FOR_SEVERITY_ALERT,
+    STUMPLESS_DEFAULT_COLOR_CODE_FOR_SEVERITY_CRIT,
+    STUMPLESS_DEFAULT_COLOR_CODE_FOR_SEVERITY_ERR,
+    STUMPLESS_DEFAULT_COLOR_CODE_FOR_SEVERITY_WARNING,
+    STUMPLESS_DEFAULT_COLOR_CODE_FOR_SEVERITY_NOTICE,
+    STUMPLESS_DEFAULT_COLOR_CODE_FOR_SEVERITY_INFO,
+    STUMPLESS_DEFAULT_COLOR_CODE_FOR_SEVERITY_DEBUG,
+  };
+
+  /* For each severity level, get the corresponding index and assign it to NULL */
+#define INITIALIZE_ONE_SEVERITY_COLOR_CODE(SEVERITY, VALUE) \
+  { \
+    index = map_severity_level_to_color_code_index( SEVERITY ); \
+    target->color_codes[index] = default_color_codes[index]; \
+  }
+
+  STUMPLESS_FOREACH_SEVERITY(INITIALIZE_ONE_SEVERITY_COLOR_CODE);
 }

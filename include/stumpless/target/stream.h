@@ -154,6 +154,22 @@ STUMPLESS_PUBLIC_FUNCTION
 struct stumpless_target *
 stumpless_open_stream_target( const char *name, FILE *stream );
 
+
+/**
+ * Assigns an output color for a given severity level.
+ *
+ * @param target
+ *
+ * @param severity
+ *
+ * @param escape_code
+ */
+STUMPLESS_PUBLIC_FUNCTION
+void
+stumpless_set_severity_color( struct stumpless_target *target,
+                              enum stumpless_severity severity,
+                              const char *escape_code );
+
 #  ifdef __cplusplus
 }                               /* extern "C" */
 #  endif

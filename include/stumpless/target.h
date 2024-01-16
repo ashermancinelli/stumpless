@@ -189,6 +189,21 @@ struct stumpless_target {
  * @since release v2.1.0
  */
   stumpless_filter_func_t filter;
+/**
+ * Array of color codes corresponding to the severity level.
+ *
+ * Because the integer value of the severity level depends on the availability
+ * of certain system headers, we cannot count on the integer value to indicate
+ * the index into this array. Instead, severities are mapped to indices by
+ * map_severity_level_to_color_code_index in stream.c.
+ * 
+ * NULL indicates that no color codes have been set for the severity level
+ * represented by that index.
+ */
+#ifdef STUMPLESS_ANSI_COLOR_CODES_SUPPORTED
+  const char *color_codes[8];
+  const char *color_code_reset;
+#endif
 #ifdef STUMPLESS_THREAD_SAFETY_SUPPORTED
 /**
  * A pointer to a mutex which protects all target fields. The exact type of

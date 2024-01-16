@@ -28,44 +28,44 @@
 #define __STUMPLESS_CONFIG_H
 
 /** Marks functions that are provided for use by the library. */
-#define STUMPLESS_PUBLIC_FUNCTION @PUBLIC_FUNCTION_DECORATION@
+#define STUMPLESS_PUBLIC_FUNCTION 
 
 /** The facility code to use when one is not supplied. */
-#define STUMPLESS_DEFAULT_FACILITY @DEFAULT_FACILITY@
+#define STUMPLESS_DEFAULT_FACILITY STUMPLESS_FACILITY_USER
 
 /** The severity code to use when one is not supplied. */
-#define STUMPLESS_DEFAULT_SEVERITY @DEFAULT_SEVERITY@
+#define STUMPLESS_DEFAULT_SEVERITY STUMPLESS_SEVERITY_INFO
 
 /** A string literal with the default socket logged to. */
-#cmakedefine STUMPLESS_DEFAULT_SOCKET "@STUMPLESS_DEFAULT_SOCKET@"
+#define STUMPLESS_DEFAULT_SOCKET "/var/run/syslog"
 
 /** The memory page size used for dynamic memory allocations. */
-#define STUMPLESS_FALLBACK_PAGESIZE @FALLBACK_PAGESIZE@
+#define STUMPLESS_FALLBACK_PAGESIZE 4096
 
 /** The language stumpless was built for, as an RFC 5646 language tag. */
-#define STUMPLESS_LANGUAGE "@STUMPLESS_LANGUAGE@"
+#define STUMPLESS_LANGUAGE "en-US"
 
 /** Defined if journald targets are supported by this build. */
-#cmakedefine STUMPLESS_JOURNALD_TARGETS_SUPPORTED 1
+/* #undef STUMPLESS_JOURNALD_TARGETS_SUPPORTED */
 
 /** Defined if network targets are supported by this build. */
-#cmakedefine STUMPLESS_NETWORK_TARGETS_SUPPORTED 1
+#define STUMPLESS_NETWORK_TARGETS_SUPPORTED 1
 
 /** Defined if socket targets are supported by this build. */
-#cmakedefine STUMPLESS_SOCKET_TARGETS_SUPPORTED 1
+#define STUMPLESS_SOCKET_TARGETS_SUPPORTED 1
 
 /** Defined if colored output is enabled */
-#cmakedefine STUMPLESS_ANSI_COLOR_CODES_SUPPORTED 1
+#define STUMPLESS_ANSI_COLOR_CODES_SUPPORTED 1
 
 /** Default escape codes for each severity level */
-#define STUMPLESS_DEFAULT_COLOR_CODE_FOR_SEVERITY_EMERG    "@DEFAULT_COLOR_CODE_FOR_SEVERITY_EMERG@"
-#define STUMPLESS_DEFAULT_COLOR_CODE_FOR_SEVERITY_ALERT    "@DEFAULT_COLOR_CODE_FOR_SEVERITY_ALERT@"
-#define STUMPLESS_DEFAULT_COLOR_CODE_FOR_SEVERITY_CRIT     "@DEFAULT_COLOR_CODE_FOR_SEVERITY_CRIT@"
-#define STUMPLESS_DEFAULT_COLOR_CODE_FOR_SEVERITY_ERR      "@DEFAULT_COLOR_CODE_FOR_SEVERITY_ERR@"
-#define STUMPLESS_DEFAULT_COLOR_CODE_FOR_SEVERITY_WARNING  "@DEFAULT_COLOR_CODE_FOR_SEVERITY_WARNING@"
-#define STUMPLESS_DEFAULT_COLOR_CODE_FOR_SEVERITY_NOTICE   "@DEFAULT_COLOR_CODE_FOR_SEVERITY_NOTICE@"
-#define STUMPLESS_DEFAULT_COLOR_CODE_FOR_SEVERITY_INFO     "@DEFAULT_COLOR_CODE_FOR_SEVERITY_INFO@"
-#define STUMPLESS_DEFAULT_COLOR_CODE_FOR_SEVERITY_DEBUG    "@DEFAULT_COLOR_CODE_FOR_SEVERITY_DEBUG@"
+#define STUMPLESS_DEFAULT_COLOR_CODE_FOR_SEVERITY_EMERG    "g"
+#define STUMPLESS_DEFAULT_COLOR_CODE_FOR_SEVERITY_ALERT    "g"
+#define STUMPLESS_DEFAULT_COLOR_CODE_FOR_SEVERITY_CRIT     "g"
+#define STUMPLESS_DEFAULT_COLOR_CODE_FOR_SEVERITY_ERR      "g"
+#define STUMPLESS_DEFAULT_COLOR_CODE_FOR_SEVERITY_WARNING  "g"
+#define STUMPLESS_DEFAULT_COLOR_CODE_FOR_SEVERITY_NOTICE   "g"
+#define STUMPLESS_DEFAULT_COLOR_CODE_FOR_SEVERITY_INFO     "g"
+#define STUMPLESS_DEFAULT_COLOR_CODE_FOR_SEVERITY_DEBUG    "g"
 
 /**
  * A string literal with the name of the table used by default for SQLite3
@@ -74,44 +74,44 @@
  * @since release v2.2.0
  */
 #define STUMPLESS_DEFAULT_SQLITE3_TABLE_NAME_STRING                             \
-"@SQLITE3_DEFAULT_TABLE_NAME@"
+"logs"
 
 /**
  * The maximum number of retries for SQLite operations.
  *
  * @since release v2.2.0
  */
-#define STUMPLESS_SQLITE3_RETRY_MAX @SQLITE3_RETRY_MAX@
+#define STUMPLESS_SQLITE3_RETRY_MAX 3
 
 /** Defined if sqlite3 targets are supported by this build. */
-#cmakedefine STUMPLESS_SQLITE3_TARGETS_SUPPORTED 1
+#define STUMPLESS_SQLITE3_TARGETS_SUPPORTED 1
 
 /** Defined if this build can directly replace syslog.h usage. */
-#cmakedefine STUMPLESS_SYSLOG_H_COMPATIBLE 1
+#define STUMPLESS_SYSLOG_H_COMPATIBLE 1
 
 /** Defined if thread-safe functionality is supported. */
-#cmakedefine STUMPLESS_THREAD_SAFETY_SUPPORTED 1
+#define STUMPLESS_THREAD_SAFETY_SUPPORTED 1
 
 /** Defined if Windows Event Log targets are supported by this build. */
-#cmakedefine STUMPLESS_WINDOWS_EVENT_LOG_TARGETS_SUPPORTED 1
+/* #undef STUMPLESS_WINDOWS_EVENT_LOG_TARGETS_SUPPORTED */
 
 /** Defined if deprecation warnings are printed to standard output. */
-#cmakedefine STUMPLESS_DEPRECATION_WARNINGS_ENABLED 1
+#define STUMPLESS_DEPRECATION_WARNINGS_ENABLED 1
 
 /** The major version of this stumpless build. */
-#define STUMPLESS_MAJOR_VERSION @PROJECT_VERSION_MAJOR@
+#define STUMPLESS_MAJOR_VERSION 2
 
 /** The minor version of this stumpless build. */
-#define STUMPLESS_MINOR_VERSION @PROJECT_VERSION_MINOR@
+#define STUMPLESS_MINOR_VERSION 2
 
 /** The patch version of this stumpless build. */
-#define STUMPLESS_PATCH_VERSION @PROJECT_VERSION_PATCH@
+#define STUMPLESS_PATCH_VERSION 0
 
 /**
  * The version of stumpless this library was built with.
  *
  * This will be in standard semantic versioning format: 'major.minor.patch'.
  */
-#define STUMPLESS_VERSION "@PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@.@PROJECT_VERSION_PATCH@"
+#define STUMPLESS_VERSION "2.2.0"
 
 #endif /* __STUMPLESS_CONFIG_H */

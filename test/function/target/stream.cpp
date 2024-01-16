@@ -255,6 +255,43 @@ namespace {
     EXPECT_ERROR_ID_EQ( STUMPLESS_ARGUMENT_EMPTY );
   }
 
+  TEST ( StreamTargetStdoutColorTest, ColorOutput ) {
+    struct stumpless_target *target;
+    struct stumpless_entry *basic_entry;
+    const struct stumpless_error *error;
+    static const char * message = "stumpless test color output";
+
+    target = stumpless_open_stderr_target( "stumpless-unit-test" );
+    EXPECT_NOT_NULL( target );
+    EXPECT_NO_ERROR;
+
+    /* For each severity level, ensure that we are able to set its escape code */
+    static const enum stumpless_severity severities[] = {
+      STUMPLESS_SEVERITY_EMERG,
+      STUMPLESS_SEVERITY_ALERT,
+      STUMPLESS_SEVERITY_CRIT,
+      STUMPLESS_SEVERITY_ERR,
+      STUMPLESS_SEVERITY_WARNING,
+      STUMPLESS_SEVERITY_NOTICE,
+      STUMPLESS_SEVERITY_INFO,
+      STUMPLESS_SEVERITY_DEBUG,
+    };
+
+    for ( unsigned int index = 0; index <= STUMPLESS_SEVERITY_DEBUG; index++ ) {
+      const enum stumpless_severity severity = severities[index];
+      basic_entry = stumpless_new_entry( STUMPLESS_FACILITY_USER,
+                                         severity,
+                                         "stumpless-unit-test",
+                                         "basic-entry",
+                                         "basic test message" );
+
+      stumpless_set_severity_color( target, severity, "" );
+      const int result = stumpless_add_entry( target, basic_entry );
+      EXPECT_GE( result, 0 );
+      EXPECT_NO_ERROR;
+    }
+  }
+
   TEST( StreamTargetWriteTest, ReadOnlyStream ) {
     struct stumpless_target *target;
     const struct stumpless_error *error;

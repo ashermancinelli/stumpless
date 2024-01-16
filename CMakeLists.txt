@@ -26,6 +26,7 @@ option(ENABLE_NETWORK_TARGETS "support network targets" ON)
 option(ENABLE_SOCKET_TARGETS "support unix domain socket targets" ON)
 option(ENABLE_SQLITE3_TARGETS "support sqlite3 targets" ON)
 option(ENABLE_WINDOWS_EVENT_LOG_TARGETS "support windows event log targets" ON)
+option(ENABLE_ANSI_COLOR_CODES "support colored output" ON)
 
 option(INSTALL_EXAMPLES "install examples" ON)
 option(INSTALL_MANPAGES "install generated manpages" ON)
@@ -51,6 +52,29 @@ string(CONCAT default_severity_help_string
 set(DEFAULT_SEVERITY "STUMPLESS_SEVERITY_INFO"
   CACHE STRING ${default_severity_help_string}
 )
+
+# Set default escape codes for each severity
+set(default_color_code_help_string
+    "The default ANSI escape code for severity STUMPLESS_"
+    )
+
+set(ansi_code_black  "\\e[0;30m")
+set(ansi_code_red    "\\e[0;31m")
+set(ansi_code_green  "\\e[0;32m")
+set(ansi_code_yellow "\\e[0;33m")
+set(ansi_code_blue   "\\e[0;34m")
+set(ansi_code_purple "\\e[0;35m")
+set(ansi_code_cyan   "\\e[0;36m")
+set(ansi_code_white  "\\e[0;37m")
+
+set(DEFAULT_COLOR_CODE_FOR_SEVERITY_EMERG   "${ansi_code_red}"    CACHE STRING "${default_color_code_help_string}SEVERITY_EMERG")
+set(DEFAULT_COLOR_CODE_FOR_SEVERITY_ALERT   "${ansi_code_yellow}" CACHE STRING "${default_color_code_help_string}SEVERITY_ALERT")
+set(DEFAULT_COLOR_CODE_FOR_SEVERITY_CRIT    "${ansi_code_red}"    CACHE STRING "${default_color_code_help_string}SEVERITY_CRIT")
+set(DEFAULT_COLOR_CODE_FOR_SEVERITY_ERR     "${ansi_code_red}"    CACHE STRING "${default_color_code_help_string}SEVERITY_ERR")
+set(DEFAULT_COLOR_CODE_FOR_SEVERITY_WARNING "${ansi_code_yellow}" CACHE STRING "${default_color_code_help_string}SEVERITY_WARNING")
+set(DEFAULT_COLOR_CODE_FOR_SEVERITY_NOTICE  "${ansi_code_cyan}"   CACHE STRING "${default_color_code_help_string}SEVERITY_NOTICE")
+set(DEFAULT_COLOR_CODE_FOR_SEVERITY_INFO    "${ansi_code_cyan}"   CACHE STRING "${default_color_code_help_string}SEVERITY_INFO")
+set(DEFAULT_COLOR_CODE_FOR_SEVERITY_DEBUG   "${ansi_code_purple}" CACHE STRING "${default_color_code_help_string}SEVERITY_DEBUG")
 
 set(FALLBACK_PAGESIZE 4096
   CACHE STRING "the memory page size to use if it cannot be detected at runtime"
@@ -424,7 +448,6 @@ else()
   set(STUMPLESS_THREAD_SAFETY_SUPPORTED TRUE)
 endif()
 
-
 # journald target support
 if(NOT ENABLE_JOURNALD_TARGETS)
   set(STUMPLESS_JOURNALD_TARGETS_SUPPORTED FALSE)
@@ -451,6 +474,14 @@ else()
   )
 endif()
 
+if(NOT ENABLE_ANSI_COLOR_CODES)
+  set(STUMPLESS_ANSI_COLOR_CODES_SUPPORTED FALSE)
+elseif(WIN32)
+  message("colored output is not supported on windows")
+  set(STUMPLESS_ANSI_COLOR_CODES_SUPPORTED FALSE)
+else()
+  set(STUMPLESS_ANSI_COLOR_CODES_SUPPORTED TRUE)
+endif()
 
 # network target support
 if(NOT ENABLE_NETWORK_TARGETS)
