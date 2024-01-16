@@ -258,7 +258,7 @@ stumpless_add_entry( struct stumpless_target *target,
       break;
 
     case STUMPLESS_STREAM_TARGET:
-      result = sendto_stream_target( target->id, buffer, builder_length );
+      result = sendto_stream_target( target->id, buffer, builder_length, entry, target->color_codes );
       break;
 
     case STUMPLESS_WINDOWS_EVENT_LOG_TARGET:

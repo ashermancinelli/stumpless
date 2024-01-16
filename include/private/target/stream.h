@@ -61,7 +61,9 @@ new_stream_target( FILE *stream );
 int
 sendto_stream_target( struct stream_target *target,
                       const char *msg,
-                      size_t msg_length );
+                      size_t msg_length,
+                      const struct stumpless_entry *entry,
+                      const char **color_codes );
 
 unsigned int
 map_severity_level_to_color_code_index(const enum stumpless_severity severity);

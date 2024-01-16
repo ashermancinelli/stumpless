@@ -18,6 +18,7 @@
 
 #include <stddef.h>
 #include <stdio.h>
+#include <string.h>
 #include <stumpless/target.h>
 #include <stumpless/target/stream.h>
 #include <stumpless/config.h>
@@ -26,6 +27,7 @@
 #include "private/error.h"
 #include "private/inthelper.h"
 #include "private/memory.h"
+#include "private/severity.h"
 #include "private/target.h"
 #include "private/target/stream.h"
 #include "private/validate.h"
@@ -111,11 +113,70 @@ new_stream_target( FILE *stream ) {
   return target;
 }
 
+static const char*
+color_code_for_severity( const char **color_codes,
+                         const enum stumpless_severity severity ) {
+  const size_t index = map_severity_level_to_color_code_index( severity );
+  const char* color_code = color_codes[index];
+  return color_code;
+}
+
+void
+write_color_code_prefix( const struct stream_target *target,
+                         const struct stumpless_entry* entry,
+                         const char **color_codes ) {
+  VALIDATE_ARG_NOT_NULL_VOID_RETURN(target);
+  VALIDATE_ARG_NOT_NULL_VOID_RETURN(entry);
+
+  size_t fwrite_result;
+
+  const enum stumpless_severity severity = get_severity( entry->prival );
+  const char *color_code = color_code_for_severity( color_codes, severity );
+  const size_t code_length = strlen( color_code );
+  if ( !code_length ) {
+    return;
+  }
+
+  config_lock_mutex( &target->stream_mutex );
+  fwrite_result = fwrite( color_code, sizeof( char ), code_length, target->stream );
+  config_unlock_mutex( &target->stream_mutex );
+
+  if (fwrite_result != code_length) {
+    raise_stream_write_failure(  );
+  }
+}
+
+void
+write_color_code_suffix( const struct stream_target *target ) {
+  VALIDATE_ARG_NOT_NULL_VOID_RETURN(target);
+
+  size_t fwrite_result;
+  static const char *reset_color_code = "\e[0m";
+  const size_t code_length = strlen( reset_color_code );
+
+  if ( !code_length ) {
+    return;
+  }
+
+  config_lock_mutex( &target->stream_mutex );
+  fwrite_result = fwrite( reset_color_code, sizeof( char ), code_length,
+                          target->stream );
+  config_unlock_mutex( &target->stream_mutex );
+
+  if (fwrite_result != code_length) {
+    raise_stream_write_failure(  );
+  }
+}
+
 int
 sendto_stream_target( struct stream_target *target,
                       const char *msg,
-                      size_t msg_length ) {
+                      size_t msg_length,
+                      const struct stumpless_entry *entry,
+                      const char **color_codes ) {
   size_t fwrite_result;
+
+  write_color_code_prefix( target, entry, color_codes );
 
   config_lock_mutex( &target->stream_mutex );
   fwrite_result = fwrite( msg, sizeof( char ), msg_length, target->stream );
@@ -124,6 +185,8 @@ sendto_stream_target( struct stream_target *target,
   if( fwrite_result != msg_length ) {
     goto write_failure;
   }
+
+  write_color_code_suffix( target );
 
   return cap_size_t_to_int( fwrite_result + 1 );
 
